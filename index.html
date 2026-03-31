@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Misiones Secundarias PRO</title>
+<meta name="theme-color" content="#0f172a">
+<style>
+:root {
+  --bg:#0b1220; --card:#111827; --card2:#0f172a; --line:#263247; --text:#e5e7eb;
+  --muted:#94a3b8; --green:#22c55e; --blue:#38bdf8; --yellow:#f59e0b; --red:#ef4444;
+}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(180deg,#08101d 0%,#0b1220 100%);color:var(--text);font-family:Arial,Helvetica,sans-serif}
+.container{max-width:1100px;margin:0 auto;padding:18px}
+.top{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;align-items:center;margin-bottom:14px}
+h1{margin:0;font-size:28px}
+.subtitle{color:var(--muted);margin-top:4px;font-size:14px}
+.panel{background:rgba(17,24,39,.92);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.18)}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(120px,1fr));gap:12px;margin-bottom:16px}
+.stat{background:var(--card2);border:1px solid var(--line);border-radius:16px;padding:14px}
+.stat .label{color:var(--muted);font-size:12px;margin-bottom:8px}
+.stat .value{font-size:28px;font-weight:700}
+.badge{display:inline-block;padding:8px 12px;border-radius:999px;font-weight:700;font-size:13px}
+.badge.zombie{background:rgba(239,68,68,.15);color:#fecaca;border:1px solid rgba(239,68,68,.35)}
+.badge.funcional{background:rgba(56,189,248,.12);color:#bae6fd;border:1px solid rgba(56,189,248,.35)}
+.badge.buendia{background:rgba(34,197,94,.12);color:#bbf7d0;border:1px solid rgba(34,197,94,.35)}
+.badge.bestia{background:rgba(245,158,11,.12);color:#fde68a;border:1px solid rgba(245,158,11,.35)}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px}
+button{background:#172235;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:10px 14px;cursor:pointer;font-weight:700}
+button.primary{background:#0f3a53;border-color:#1e6f97}
+button.success{background:#0f3a22;border-color:#1f7a4f}
+button:hover{filter:brightness(1.08)}
+button:disabled{opacity:.75;cursor:default}
+input[type="text"]{flex:1;min-width:230px;background:#0e1727;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.section{margin-top:16px}
+.section-title{position:sticky;top:0;background:rgba(11,18,32,.96);backdrop-filter:blur(6px);padding:10px 0;margin:0 0 8px 0;font-size:18px}
+.count{color:var(--muted);font-size:13px;font-weight:400}
+.activities{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.item{display:flex;align-items:center;gap:10px;background:#0f172a;border:1px solid var(--line);border-radius:14px;padding:11px 12px}
+.item input[type="checkbox"]{width:18px;height:18px;accent-color:#22c55e;flex:0 0 auto}
+.item.done{border-color:rgba(34,197,94,.4);background:rgba(34,197,94,.08)}
+.item .text{line-height:1.25}
+.history{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;margin-top:10px}
+.daybox{background:#0f172a;border:1px solid var(--line);border-radius:14px;padding:12px;text-align:center}
+.daybox .d{color:var(--muted);font-size:12px;margin-bottom:8px}
+.daybox .n{font-size:22px;font-weight:700}
+.note{color:var(--muted);font-size:13px;margin-top:10px}
+.suggested-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.suggested-item{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#101b31;border:1px solid #28507d;border-radius:14px;padding:12px}
+.suggested-left{display:flex;flex-direction:column;gap:5px}
+.suggested-cat{font-size:11px;color:var(--blue);font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.suggested-text{line-height:1.25}
+.small{font-size:12px;color:var(--muted)}
+@media (max-width:760px){
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .activities,.suggested-grid{grid-template-columns:1fr}
+  .history{grid-template-columns:repeat(4,1fr)}
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="top">
+    <div>
+      <h1>Misiones Secundarias PRO</h1>
+      <div class="subtitle">Más de 209 actividades, sugerencias al azar reales, rachas y guardado automático.</div>
+    </div>
+    <div class="panel" style="padding:12px 14px;">
+      <div style="font-size:12px;color:var(--muted);">Hoy</div>
+      <div id="todayLabel" style="font-weight:700;"></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="stats">
+      <div class="stat">
+        <div class="label">Completadas hoy</div>
+        <div class="value"><span id="doneCount">0</span> / <span id="totalCount">209</span></div>
+      </div>
+      <div class="stat">
+        <div class="label">Nivel</div>
+        <div class="value" style="font-size:18px;"><span id="levelBadge" class="badge zombie">Zombie</span></div>
+      </div>
+      <div class="stat">
+        <div class="label">Racha</div>
+        <div class="value"><span id="streak">0</span> 🔥</div>
+      </div>
+      <div class="stat">
+        <div class="label">Meta sugerida</div>
+        <div class="value" style="font-size:18px;">3–5+</div>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <input id="search" type="text" placeholder="Buscar actividad..." oninput="renderAll()">
+      <button class="primary" onclick="pickSuggested()">Elegir 5 al azar</button>
+      <button onclick="clearToday()">Limpiar hoy</button>
+      <button onclick="clearSuggested()">Limpiar sugeridas</button>
+    </div>
+
+    <div class="section">
+      <h2 class="section-title">Tus 5 sugeridas de hoy <span class="count">(se generan al azar y no se marcan solas)</span></h2>
+      <div id="suggestedList" class="suggested-grid"></div>
+      <div class="note">Aquí aparecen arriba las 5 misiones sugeridas. Cuando realmente la hagas, aprietas “Marcar hecha”.</div>
+    </div>
+
+    <div id="sections"></div>
+
+    <div class="section">
+      <h2 class="section-title">Últimos 7 días</h2>
+      <div id="history" class="history"></div>
+      <div class="note">La racha cuenta días consecutivos con 3 o más actividades completadas.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const DATA = {"Mente y foco": ["Escribir 5 líneas sobre tu día", "Hacer un brain dump de 5 minutos", "Leer 5 páginas de un libro", "Leer 10 páginas de un libro", "Ver un video educativo corto", "Aprender una palabra nueva", "Memorizar una frase útil", "Hacer una lista de pendientes realista", "Definir 3 prioridades del día", "Revisar tus metas de la semana", "Anotar 3 cosas que hiciste bien", "Anotar 1 cosa a mejorar mañana", "Resolver un problema pendiente por 10 minutos", "Pasar 10 minutos sin celular", "Pasar 15 minutos sin estímulos", "Leer un artículo largo", "Subrayar una idea importante", "Escuchar una charla útil", "Resumir algo que aprendiste hoy", "Hacer una pausa de concentración de 20 minutos", "Ordenar tus ideas en una nota", "Releer una meta importante", "Aprender un atajo útil del celular", "Practicar memoria con 10 palabras", "Escribir una pregunta que quieras responder", "Reflexionar 10 minutos sobre una decisión", "Hacer una mini sesión de estudio", "Leer una biografía por 10 minutos"], "Cuerpo y salud": ["Caminar 10 minutos", "Caminar 20 minutos", "Caminar 30 minutos", "Entrenar en el gimnasio", "Hacer una rutina corta en casa", "Estirar 5 minutos", "Estirar 10 minutos", "Hacer movilidad de hombros", "Hacer movilidad de espalda", "Subir escaleras en vez de ascensor", "Tomar 2 litros de agua", "Comer una fruta", "Comer verduras en una comida", "Evitar bebida azucarada por hoy", "Dormir sin pantalla 30 minutos antes", "Hacer 20 sentadillas", "Hacer 10 flexiones o su versión adaptada", "Caminar después de comer", "Preparar una comida más sana", "Hacer respiración diafragmática", "Moverte 5 minutos entre tareas", "Controlar porciones en una comida", "Reemplazar un snack por algo mejor", "Dormir una hora antes", "Hacer una rutina de abdomen corta", "Hacer bicicleta 20 minutos", "Masajear cuello y hombros", "Preparar colación saludable"], "Orden y casa": ["Hacer la cama", "Ordenar el velador", "Ordenar un cajón", "Ordenar el escritorio", "Ordenar la mochila o bolso", "Lavar loza", "Limpiar la cocina", "Limpiar el baño", "Barrer una zona de la casa", "Botar papeles innecesarios", "Sacar basura", "Preparar la ropa de mañana", "Dejar listo lo del trabajo", "Hacer una lista de compras", "Revisar gastos del día", "Ordenar el clóset por 10 minutos", "Limpiar el lavaplatos", "Pasar un paño a una superficie", "Aspirar una pieza", "Cambiar sábanas", "Doblar ropa acumulada", "Limpiar el espejo del baño", "Ordenar el refrigerador un poco", "Limpiar el celular", "Limpiar el teclado", "Vaciar una bolsa o caja pendiente", "Revisar remedios o productos vencidos", "Dejar la entrada ordenada"], "Social": ["Responder un mensaje pendiente", "Escribirle a alguien que aprecias", "Agradecer algo a alguien", "Dar un cumplido sincero", "Tener una conversación sin mirar el celular", "Llamar a alguien", "Escuchar activamente 5 minutos", "Preguntarle a alguien cómo está de verdad", "Compartir algo útil con alguien", "Invitar a alguien a hacer algo simple", "Hablar con un compañero con intención", "Tener una conversación nueva", "Pedir ayuda en algo pequeño", "Contarle algo bueno a alguien", "Reconciliarte con alguien en algo chico", "Mandar un audio en vez de texto", "Conversar con un familiar", "Decir que no cuando corresponde", "Ofrecer ayuda a alguien", "Celebrar un logro ajeno", "Saludar primero", "Hablar con un vecino", "Escribir a un amigo antiguo", "Preguntar algo con interés real", "Escuchar sin dar consejos"], "Crecimiento personal": ["Hacer algo incómodo por 5 minutos", "Hacer algo que llevas postergando", "Tomar una decisión pendiente", "Reducir 30 minutos de redes sociales", "No procrastinar una tarea importante", "Empezar algo aunque no esté perfecto", "Terminar algo que dejaste a medias", "Probar una ruta distinta", "Probar una comida distinta", "Hacer algo sin buscar validación", "Anotar una lección del día", "Pensar en tu yo de 3 meses", "Dar el primer paso en algo nuevo", "Decir que no a una distracción", "Poner límites en algo pequeño", "Ordenar una idea importante", "Tener 10 minutos de silencio voluntario", "Aprender algo práctico nuevo", "Hacer algo solo por disciplina", "Enfrentar una tarea chica que evitabas", "Aplazar una gratificación inmediata", "Probar un hábito por un día", "Tomar una mini decisión con firmeza", "Soltar algo que no suma", "Parar una comparación innecesaria"], "Creatividad": ["Escuchar música con atención", "Crear una playlist corta", "Tomar una foto interesante", "Escribir una idea de proyecto", "Escribir una reflexión corta", "Dibujar algo simple", "Ordenar ideas para un proyecto", "Hacer algo manual", "Cocinar algo distinto", "Buscar inspiración 10 minutos", "Guardar una idea buena para después", "Hacer una nota de voz con ideas", "Escribir una mini historia", "Hacer una lista de títulos posibles", "Tomar fotos de texturas", "Dibujar un objeto cotidiano", "Cambiar el fondo de pantalla", "Hacer una portada simple", "Improvisar una receta", "Editar una foto", "Escribir un verso o frase", "Inventar un nombre para un proyecto", "Redecorar un rincón", "Ver referencias visuales", "Practicar caligrafía 5 minutos"], "Finanzas y vida adulta": ["Revisar tu saldo", "Anotar un gasto del día", "Evitar un gasto impulsivo", "Pagar una cuenta pendiente", "Revisar una suscripción", "Comparar un precio antes de comprar", "Guardar algo de plata", "Planear una compra importante", "Ordenar documentos personales", "Responder un correo pendiente", "Limpiar archivos del celular", "Eliminar fotos innecesarias", "Revisar una boleta o factura", "Hacer presupuesto de la semana", "Anotar una meta de ahorro", "Cotizar algo que quieres", "Ver cuánto gastaste hoy", "Cancelar algo que no usas", "Respaldar archivos importantes", "Revisar tu calendario", "Actualizar una contraseña", "Borrar apps que no usas", "Ordenar descargas del celular", "Revisar una transferencia pendiente", "Poner alarma para un trámite"], "Bienestar y calma": ["Respirar profundo 3 minutos", "Respirar profundo 5 minutos", "Salir 10 minutos sin audífonos", "Tomar sol 10 minutos", "Mirar el atardecer", "Tomarte un café o té con calma", "Sentarte sin hacer nada 5 minutos", "Agradecer 3 cosas del día", "Bajar el ritmo por 10 minutos", "Escuchar silencio un rato", "Dormir una siesta corta", "Hacer pausa consciente", "Cerrar los ojos 2 minutos", "Estar 5 minutos mirando por la ventana", "Caminar sin apuro", "Escuchar una canción tranquilo", "Hacer una ducha consciente", "Apagar notificaciones un rato", "Sentarte en un banco 10 minutos", "Tomar aire afuera", "Mirar el cielo un rato", "Escribir algo que te alivie", "No hacer multitarea por 15 minutos", "Dejar el celular lejos 20 minutos", "Acostarte un rato a descansar"]};
+const today = new Date();
+const todayKey = "missions_" + today.toISOString().slice(0,10);
+
+function loadStore() {
+  return JSON.parse(localStorage.getItem("missions_app_pro_v4") || "{}");
+}
+function saveStore(store) {
+  localStorage.setItem("missions_app_pro_v4", JSON.stringify(store));
+}
+function ensureToday() {
+  const store = loadStore();
+  if (!store[todayKey]) store[todayKey] = { done: {}, suggested: [] };
+  if (!store[todayKey].done) store[todayKey].done = {};
+  if (!store[todayKey].suggested) store[todayKey].suggested = [];
+  saveStore(store);
+  return store;
+}
+function getDay(dayKey) {
+  const store = loadStore();
+  return store[dayKey] || { done: {}, suggested: [] };
+}
+function getDoneCount(dayKey) {
+  const day = getDay(dayKey);
+  return Object.values(day.done || {}).filter(Boolean).length;
+}
+function getLevel(n) {
+  if (n <= 2) return ["Zombie","zombie"];
+  if (n <= 4) return ["Funcional","funcional"];
+  if (n <= 6) return ["Buen día","buendia"];
+  return ["Modo bestia","bestia"];
+}
+function makeId(cat, act) {
+  return cat + "||" + act;
+}
+function isChecked(cat, act) {
+  const day = getDay(todayKey);
+  return !!day.done[makeId(cat, act)];
+}
+function toggle(cat, act, checked) {
+  const store = ensureToday();
+  store[todayKey].done[makeId(cat, act)] = checked;
+  saveStore(store);
+  updateStats();
+  renderSuggested();
+}
+function updateStats() {
+  const done = getDoneCount(todayKey);
+  document.getElementById("doneCount").textContent = done;
+  const info = getLevel(done);
+  const badge = document.getElementById("levelBadge");
+  badge.textContent = info[0];
+  badge.className = "badge " + info[1];
+  document.getElementById("streak").textContent = calculateStreak();
+  renderHistory();
+}
+function calculateStreak() {
+  let streak = 0;
+  const now = new Date();
+  for (let i = 0; i < 365; i++) {
+    const d = new Date(now);
+    d.setDate(now.getDate() - i);
+    const key = "missions_" + d.toISOString().slice(0,10);
+    const done = getDoneCount(key);
+    if (done >= 3) streak++;
+    else break;
+  }
+  return streak;
+}
+function renderAll() {
+  const query = document.getElementById("search").value.trim().toLowerCase();
+  const root = document.getElementById("sections");
+  root.innerHTML = "";
+  Object.entries(DATA).forEach(function(entry) {
+    const cat = entry[0];
+    const arr = entry[1];
+    const filtered = arr.filter(a => a.toLowerCase().includes(query) || cat.toLowerCase().includes(query));
+    if (!filtered.length) return;
+
+    const section = document.createElement("div");
+    section.className = "section";
+
+    const title = document.createElement("h2");
+    title.className = "section-title";
+    title.innerHTML = cat + ' <span class="count">(' + filtered.length + ')</span>';
+    section.appendChild(title);
+
+    const list = document.createElement("div");
+    list.className = "activities";
+
+    filtered.forEach(function(act) {
+      const label = document.createElement("label");
+      label.className = "item" + (isChecked(cat, act) ? " done" : "");
+
+      const cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.checked = isChecked(cat, act);
+      cb.onchange = function() {
+        toggle(cat, act, cb.checked);
+        label.className = "item" + (cb.checked ? " done" : "");
+      };
+
+      const span = document.createElement("div");
+      span.className = "text";
+      span.textContent = act;
+
+      label.appendChild(cb);
+      label.appendChild(span);
+      list.appendChild(label);
+    });
+
+    section.appendChild(list);
+    root.appendChild(section);
+  });
+}
+function pickSuggested() {
+  const store = ensureToday();
+  const all = [];
+  Object.entries(DATA).forEach(function(entry) {
+    const cat = entry[0];
+    const arr = entry[1];
+    arr.forEach(function(act) {
+      all.push({cat: cat, act: act});
+    });
+  });
+  for (let i = all.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const temp = all[i];
+    all[i] = all[j];
+    all[j] = temp;
+  }
+  store[todayKey].suggested = all.slice(0, 5);
+  saveStore(store);
+  renderSuggested();
+}
+function clearSuggested() {
+  const store = ensureToday();
+  store[todayKey].suggested = [];
+  saveStore(store);
+  renderSuggested();
+}
+function markSuggestedDone(cat, act) {
+  const store = ensureToday();
+  store[todayKey].done[makeId(cat, act)] = true;
+  saveStore(store);
+  renderSuggested();
+  renderAll();
+  updateStats();
+}
+function renderSuggested() {
+  const root = document.getElementById("suggestedList");
+  root.innerHTML = "";
+  const day = getDay(todayKey);
+  const suggested = day.suggested || [];
+
+  if (!suggested.length) {
+    root.innerHTML = '<div class="small">Todavía no generas sugeridas. Aprieta <b>Elegir 5 al azar</b>.</div>';
+    return;
+  }
+
+  suggested.forEach(function(item) {
+    const done = !!day.done[makeId(item.cat, item.act)];
+    const box = document.createElement("div");
+    box.className = "suggested-item";
+
+    const left = document.createElement("div");
+    left.className = "suggested-left";
+
+    const cat = document.createElement("div");
+    cat.className = "suggested-cat";
+    cat.textContent = item.cat;
+
+    const text = document.createElement("div");
+    text.className = "suggested-text";
+    text.textContent = item.act;
+
+    left.appendChild(cat);
+    left.appendChild(text);
+
+    const btn = document.createElement("button");
+    btn.className = done ? "success" : "primary";
+    btn.textContent = done ? "Hecha ✅" : "Marcar hecha";
+    btn.disabled = done;
+    btn.onclick = function() {
+      markSuggestedDone(item.cat, item.act);
+    };
+
+    box.appendChild(left);
+    box.appendChild(btn);
+    root.appendChild(box);
+  });
+}
+function clearToday() {
+  const store = loadStore();
+  store[todayKey] = { done: {}, suggested: [] };
+  saveStore(store);
+  renderAll();
+  renderSuggested();
+  updateStats();
+}
+function renderHistory() {
+  const root = document.getElementById("history");
+  root.innerHTML = "";
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const key = "missions_" + d.toISOString().slice(0,10);
+    const label = d.toLocaleDateString("es-CL", { weekday: "short", day: "2-digit", month: "2-digit" });
+    const n = getDoneCount(key);
+    const box = document.createElement("div");
+    box.className = "daybox";
+    box.innerHTML = '<div class="d">' + label + '</div><div class="n">' + n + '</div>';
+    root.appendChild(box);
+  }
+}
+
+document.getElementById("todayLabel").textContent = today.toLocaleDateString("es-CL", {
+  weekday:"long", day:"numeric", month:"long", year:"numeric"
+});
+ensureToday();
+renderSuggested();
+renderAll();
+updateStats();
+</script>
+</body>
+</html>
