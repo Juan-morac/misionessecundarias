@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Misiones Secundarias PRO</title>
+<meta name="theme-color" content="#0f172a">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png">
+<style>
+:root {
+  --bg: #0b1220; --card: #111827; --card2: #0f172a; --line: #263247; --text: #e5e7eb;
+  --muted: #94a3b8; --good: #22c55e; --warn: #f59e0b; --bad: #ef4444;
+}
+* { box-sizing: border-box; }
+body { margin:0; background:linear-gradient(180deg,#08101d 0%,#0b1220 100%); color:var(--text); font-family:Arial,Helvetica,sans-serif; }
+.container { max-width:980px; margin:0 auto; padding:18px; }
+.top { display:flex; flex-wrap:wrap; justify-content:space-between; gap:12px; align-items:center; margin-bottom:14px; }
+h1 { margin:0; font-size:28px; }
+.subtitle { color:var(--muted); margin-top:4px; font-size:14px; }
+.panel { background:rgba(17,24,39,.92); border:1px solid var(--line); border-radius:18px; padding:16px; box-shadow:0 10px 30px rgba(0,0,0,.18); }
+.stats { display:grid; grid-template-columns:repeat(4,minmax(120px,1fr)); gap:12px; margin-bottom:16px; }
+.stat { background:var(--card2); border:1px solid var(--line); border-radius:16px; padding:14px; }
+.stat .label { color:var(--muted); font-size:12px; margin-bottom:8px; }
+.stat .value { font-size:28px; font-weight:700; }
+.badge { display:inline-block; padding:8px 12px; border-radius:999px; font-weight:700; font-size:13px; }
+.badge.zombie { background:rgba(239,68,68,.15); color:#fecaca; border:1px solid rgba(239,68,68,.35); }
+.badge.funcional { background:rgba(56,189,248,.12); color:#bae6fd; border:1px solid rgba(56,189,248,.35); }
+.badge.buendia { background:rgba(34,197,94,.12); color:#bbf7d0; border:1px solid rgba(34,197,94,.35); }
+.badge.bestia { background:rgba(245,158,11,.12); color:#fde68a; border:1px solid rgba(245,158,11,.35); }
+.toolbar { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:16px; }
+button {
+  background:#172235; color:var(--text); border:1px solid var(--line); border-radius:12px; padding:10px 14px; cursor:pointer; font-weight:700;
+}
+button.primary { background:#0f3a53; border-color:#1e6f97; }
+button:hover { filter:brightness(1.08); }
+input[type="text"] {
+  flex:1; min-width:230px; background:#0e1727; color:var(--text); border:1px solid var(--line); border-radius:12px; padding:10px 12px;
+}
+.section { margin-top:16px; }
+.section-title {
+  position:sticky; top:0; background:rgba(11,18,32,.96); backdrop-filter:blur(6px);
+  padding:10px 0; margin:0 0 8px 0; font-size:18px;
+}
+.count { color:var(--muted); font-size:13px; font-weight:400; }
+.activities { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+.item {
+  display:flex; align-items:center; gap:10px; background:#0f172a; border:1px solid var(--line);
+  border-radius:14px; padding:11px 12px;
+}
+.item input[type="checkbox"] { width:18px; height:18px; accent-color:#22c55e; flex:0 0 auto; }
+.item.done { border-color:rgba(34,197,94,.4); background:rgba(34,197,94,.08); }
+.item .text { line-height:1.25; }
+.history { display:grid; grid-template-columns:repeat(7,1fr); gap:10px; margin-top:10px; }
+.daybox { background:#0f172a; border:1px solid var(--line); border-radius:14px; padding:12px; text-align:center; }
+.daybox .d { color:var(--muted); font-size:12px; margin-bottom:8px; }
+.daybox .n { font-size:22px; font-weight:700; }
+.note { color:var(--muted); font-size:13px; margin-top:10px; }
+.install-tip { font-size:12px; color:var(--muted); margin-top:8px; }
+@media (max-width:760px) {
+  .stats { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .activities { grid-template-columns:1fr; }
+  .history { grid-template-columns:repeat(4,1fr); }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="top">
+    <div>
+      <h1>Misiones Secundarias PRO</h1>
+      <div class="subtitle">Modo oscuro, rachas reales, guardado automático y más de 107 actividades.</div>
+    </div>
+    <div class="panel" style="padding:12px 14px;">
+      <div style="font-size:12px;color:var(--muted);">Hoy</div>
+      <div id="todayLabel" style="font-weight:700;"></div>
+      <div class="install-tip" id="installTip">Lista para instalar como app cuando esté subida a la web.</div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="stats">
+      <div class="stat">
+        <div class="label">Completadas hoy</div>
+        <div class="value"><span id="doneCount">0</span> / <span id="totalCount">107</span></div>
+      </div>
+      <div class="stat">
+        <div class="label">Nivel</div>
+        <div class="value" style="font-size:18px;"><span id="levelBadge" class="badge zombie">Zombie</span></div>
+      </div>
+      <div class="stat">
+        <div class="label">Racha</div>
+        <div class="value"><span id="streak">0</span> 🔥</div>
+      </div>
+      <div class="stat">
+        <div class="label">Meta sugerida</div>
+        <div class="value" style="font-size:18px;">3–5+</div>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <input id="search" type="text" placeholder="Buscar actividad..." oninput="renderAll()">
+      <button class="primary" onclick="selectSuggested()">Elegir 5 al azar</button>
+      <button onclick="clearToday()">Limpiar hoy</button>
+      <button id="installBtn" onclick="installApp()" style="display:none;">Instalar app</button>
+    </div>
+
+    <div id="sections"></div>
+
+    <div class="section">
+      <h2 class="section-title">Últimos 7 días</h2>
+      <div id="history" class="history"></div>
+      <div class="note">La racha cuenta días consecutivos con 3 o más actividades completadas.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const DATA = {"Mente y foco": ["Escribir 5 líneas sobre tu día", "Hacer un brain dump de 5 minutos", "Leer 5 páginas de un libro", "Leer 10 páginas de un libro", "Ver un video educativo corto", "Aprender una palabra nueva", "Memorizar una frase útil", "Hacer una lista de pendientes realista", "Definir 3 prioridades del día", "Revisar tus metas de la semana", "Anotar 3 cosas que hiciste bien", "Anotar 1 cosa a mejorar mañana", "Resolver un problema pendiente por 10 minutos", "Pasar 10 minutos sin celular", "Pasar 15 minutos sin estímulos"], "Cuerpo y salud": ["Caminar 10 minutos", "Caminar 20 minutos", "Caminar 30 minutos", "Entrenar en el gimnasio", "Hacer una rutina corta en casa", "Estirar 5 minutos", "Estirar 10 minutos", "Hacer movilidad de hombros", "Hacer movilidad de espalda", "Subir escaleras en vez de ascensor", "Tomar 2 litros de agua", "Comer una fruta", "Comer verduras en una comida", "Evitar bebida azucarada por hoy", "Dormir sin pantalla 30 minutos antes"], "Orden y casa": ["Hacer la cama", "Ordenar el velador", "Ordenar un cajón", "Ordenar el escritorio", "Ordenar la mochila o bolso", "Lavar loza", "Limpiar la cocina", "Limpiar el baño", "Barrer una zona de la casa", "Botar papeles innecesarios", "Sacar basura", "Preparar la ropa de mañana", "Dejar listo lo del trabajo", "Hacer una lista de compras", "Revisar gastos del día"], "Social": ["Responder un mensaje pendiente", "Escribirle a alguien que aprecias", "Agradecer algo a alguien", "Dar un cumplido sincero", "Tener una conversación sin mirar el celular", "Llamar a alguien", "Escuchar activamente 5 minutos", "Preguntarle a alguien cómo está de verdad", "Compartir algo útil con alguien", "Invitar a alguien a hacer algo simple", "Hablar con un compañero con intención", "Tener una conversación nueva", "Pedir ayuda en algo pequeño"], "Crecimiento personal": ["Hacer algo incómodo por 5 minutos", "Hacer algo que llevas postergando", "Tomar una decisión pendiente", "Reducir 30 minutos de redes sociales", "No procrastinar una tarea importante", "Empezar algo aunque no esté perfecto", "Terminar algo que dejaste a medias", "Probar una ruta distinta", "Probar una comida distinta", "Hacer algo sin buscar validación", "Anotar una lección del día", "Pensar en tu yo de 3 meses", "Dar el primer paso en algo nuevo"], "Creatividad": ["Escuchar música con atención", "Crear una playlist corta", "Tomar una foto interesante", "Escribir una idea de proyecto", "Escribir una reflexión corta", "Dibujar algo simple", "Ordenar ideas para un proyecto", "Hacer algo manual", "Cocinar algo distinto", "Buscar inspiración 10 minutos", "Guardar una idea buena para después", "Hacer una nota de voz con ideas"], "Finanzas y vida adulta": ["Revisar tu saldo", "Anotar un gasto del día", "Evitar un gasto impulsivo", "Pagar una cuenta pendiente", "Revisar una suscripción", "Comparar un precio antes de comprar", "Guardar algo de plata", "Planear una compra importante", "Ordenar documentos personales", "Responder un correo pendiente", "Limpiar archivos del celular", "Eliminar fotos innecesarias"], "Bienestar y calma": ["Respirar profundo 3 minutos", "Respirar profundo 5 minutos", "Salir 10 minutos sin audífonos", "Tomar sol 10 minutos", "Mirar el atardecer", "Tomarte un café o té con calma", "Sentarte sin hacer nada 5 minutos", "Agradecer 3 cosas del día", "Bajar el ritmo por 10 minutos", "Escuchar silencio un rato", "Dormir una siesta corta", "Hacer pausa consciente"]};
+let deferredPrompt = null;
+
+function keyForDate(d) {
+  return "missions_" + d.toISOString().slice(0,10);
+}
+function loadStore() {
+  return JSON.parse(localStorage.getItem("missions_app_pro_v3") || "{}");
+}
+function saveStore(store) {
+  localStorage.setItem("missions_app_pro_v3", JSON.stringify(store));
+}
+const today = new Date();
+const todayKey = keyForDate(today);
+
+function ensureToday() {
+  const store = loadStore();
+  if (!store[todayKey]) store[todayKey] = {};
+  saveStore(store);
+  return store;
+}
+function getDoneCount(dayKey) {
+  const store = loadStore();
+  const day = store[dayKey] || {};
+  return Object.values(day).filter(Boolean).length;
+}
+function getLevel(n) {
+  if (n <= 2) return ["Zombie","zombie"];
+  if (n <= 4) return ["Funcional","funcional"];
+  if (n <= 6) return ["Buen día","buendia"];
+  return ["Modo bestia","bestia"];
+}
+function updateStats() {
+  const done = getDoneCount(todayKey);
+  document.getElementById("doneCount").textContent = done;
+  const [name, cls] = getLevel(done);
+  const badge = document.getElementById("levelBadge");
+  badge.textContent = name;
+  badge.className = "badge " + cls;
+  document.getElementById("streak").textContent = calculateStreak();
+  renderHistory();
+}
+function calculateStreak() {
+  let streak = 0;
+  const now = new Date();
+  for (let i = 0; i < 365; i++) {
+    const d = new Date(now);
+    d.setDate(now.getDate() - i);
+    const k = keyForDate(d);
+    const done = getDoneCount(k);
+    if (done >= 3) streak++;
+    else break;
+  }
+  return streak;
+}
+function toggle(cat, act, checked) {
+  const store = ensureToday();
+  const key = cat + "||" + act;
+  store[todayKey][key] = checked;
+  saveStore(store);
+  updateStats();
+}
+function isChecked(cat, act) {
+  const store = ensureToday();
+  const key = cat + "||" + act;
+  return !!(store[todayKey] && store[todayKey][key]);
+}
+function renderAll() {
+  const query = document.getElementById("search").value.trim().toLowerCase();
+  const root = document.getElementById("sections");
+  root.innerHTML = "";
+  Object.entries(DATA).forEach(([cat, arr]) => {
+    const filtered = arr.filter(a => a.toLowerCase().includes(query) || cat.toLowerCase().includes(query));
+    if (!filtered.length) return;
+    const section = document.createElement("div");
+    section.className = "section";
+    const title = document.createElement("h2");
+    title.className = "section-title";
+    title.innerHTML = cat + ' <span class="count">(' + filtered.length + ')</span>';
+    section.appendChild(title);
+
+    const list = document.createElement("div");
+    list.className = "activities";
+    filtered.forEach(act => {
+      const label = document.createElement("label");
+      label.className = "item" + (isChecked(cat, act) ? " done" : "");
+      const cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.checked = isChecked(cat, act);
+      cb.onchange = () => {
+        toggle(cat, act, cb.checked);
+        label.className = "item" + (cb.checked ? " done" : "");
+      };
+      const span = document.createElement("div");
+      span.className = "text";
+      span.textContent = act;
+      label.appendChild(cb);
+      label.appendChild(span);
+      list.appendChild(label);
+    });
+    section.appendChild(list);
+    root.appendChild(section);
+  });
+}
+function clearToday() {
+  const store = loadStore();
+  store[todayKey] = {};
+  saveStore(store);
+  renderAll();
+  updateStats();
+}
+function selectSuggested() {
+  const store = ensureToday();
+  const all = [];
+  Object.entries(DATA).forEach(([cat, arr]) => arr.forEach(act => all.push([cat, act])));
+  for (let i = all.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [all[i], all[j]] = [all[j], all[i]];
+  }
+  let picked = 0;
+  for (const [cat, act] of all) {
+    const key = cat + "||" + act;
+    if (!store[todayKey][key]) {
+      store[todayKey][key] = true;
+      picked++;
+      if (picked >= 5) break;
+    }
+  }
+  saveStore(store);
+  renderAll();
+  updateStats();
+}
+function renderHistory() {
+  const root = document.getElementById("history");
+  root.innerHTML = "";
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const box = document.createElement("div");
+    box.className = "daybox";
+    const label = d.toLocaleDateString("es-CL", { weekday: "short", day: "2-digit", month: "2-digit" });
+    const n = getDoneCount(keyForDate(d));
+    box.innerHTML = '<div class="d">' + label + '</div><div class="n">' + n + '</div>';
+    root.appendChild(box);
+  }
+}
+function installApp() {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.finally(() => {
+    deferredPrompt = null;
+    document.getElementById("installBtn").style.display = "none";
+  });
+}
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById("installBtn").style.display = "inline-block";
+  document.getElementById("installTip").textContent = "Puedes tocar 'Instalar app'.";
+});
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
+}
+
+document.getElementById("todayLabel").textContent = today.toLocaleDateString("es-CL", {
+  weekday:"long", day:"numeric", month:"long", year:"numeric"
+});
+ensureToday();
+renderAll();
+updateStats();
+</script>
+</body>
+</html>
